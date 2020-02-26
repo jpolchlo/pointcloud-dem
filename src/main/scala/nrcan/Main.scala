@@ -16,6 +16,8 @@ import geotrellis.util.RangeReader
 import _root_.io.circe._, _root_.io.circe.parser._
 import _root_.io.circe.generic.auto._, _root_.io.circe.syntax._
 import _root_.io.pdal._
+import org.locationtech.jts.geom.Coordinate
+import spire.syntax.cfor._
 
 import java.net.URI
 
@@ -95,7 +97,7 @@ object Main extends CommandApp(
               |    {
               |      "type": "readers.ept",
               |      "filename": "${eptSource.toString}",
-              |      "resolution": ${targetCellSize.resolution * 10}
+              |      "resolution": ${targetCellSize.resolution * 12}
               |    }
               |  ]
               |}
@@ -112,14 +114,28 @@ object Main extends CommandApp(
            iter.next.getPointCloud
          }
 
-         val pointSet = new CompleteIndexedPointSet {
-           def length = pc.length
-           def getX(i: Int) = pc.getX(i)
-           def getY(i: Int) = pc.getY(i)
-           def getZ(i: Int) = pc.getZ(i)
+         // val coords = Extras.time("Convert point cloud to array"){
+         //   for {
+         //     i <- Range(0, pc.length).toArray
+         //   } yield
+         //     new org.locationtech.jts.geom.Coordinate(pc.getX(i), pc.getY(i), pc.getZ(i))
+         // }
+
+         val coords = Array.ofDim[Coordinate](pc.length)
+         Extras.time("Convert point cloud to array"){
+           cfor(0)(_ < pc.length, _ + 1){ i =>
+             coords(i) = new Coordinate(pc.getX(i), pc.getY(i), pc.getZ(i))
+           }
          }
 
-         val dt = Extras.time(s"Built triangulation from point set of ${pointSet.length} points (sample point=${pointSet.getCoordinate(0)})")(DelaunayTriangulation(pointSet))
+         // val pointSet = new CompleteIndexedPointSet {
+         //   def length = pc.length
+         //   def getX(i: Int) = pc.getX(i)
+         //   def getY(i: Int) = pc.getY(i)
+         //   def getZ(i: Int) = pc.getZ(i)
+         // }
+
+         val dt = Extras.time(s"Built triangulation from point set of ${pc.length} points")(DelaunayTriangulation(coords))
 
          val tile = Extras.time("Rendered DEM"){
            DelaunayRasterizer.rasterizeDelaunayTriangulation(
