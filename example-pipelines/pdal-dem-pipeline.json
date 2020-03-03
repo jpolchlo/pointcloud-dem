@@ -1,12 +1,9 @@
 [
     {
         "type": "readers.ept",
-        "filename": "file:///home/jpolchlopek/data/pointcloud/USGS/USGS_LPC_ME_Eastern_B1_2017_19TEL505083_LAS_2019.ept/ept.json",
-        "bounds": "([505498,5083498], [507002, 5085002])"
-    },
-    {
-        "type": "filters.head",
-        "count": "250000"
+        "filename": "file:///data/USGS_LPC_ME_Eastern_B1_2017_19TEL505083_LAS_2019.ept/ept.json",
+        "bounds": "([505498,5083498], [507002, 5085002])",
+        "resolution": 5
     },
     {
         "type": "filters.delaunay"

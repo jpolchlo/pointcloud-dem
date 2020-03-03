@@ -97,7 +97,7 @@ object Main extends CommandApp(
               |    {
               |      "type": "readers.ept",
               |      "filename": "${eptSource.toString}",
-              |      "resolution": ${targetCellSize.resolution * 12}
+              |      "resolution": ${targetCellSize.resolution * 5}
               |    }
               |  ]
               |}
